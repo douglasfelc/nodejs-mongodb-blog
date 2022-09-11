@@ -1,0 +1,33 @@
+{{#each erros}}
+  <div class="alert alert-danger">{{texto}}</div>
+{{/each}}
+
+<div class="card">
+  <div class="card-header">
+    {{#if categoria.id}}
+      Nova categoria
+    {{else}}
+      Editar categoria
+    {{/if}}
+  </div>
+  <div class="card-body">
+
+    <form action="/admin/categorias/salvar" method="POST" class="row g-3">
+      <input type="hidden" name="id" value="{{categoria._id}}">
+      <div class="col-md-6">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" name="nome" required value="{{categoria.nome}}">
+      </div>
+      <div class="col-md-6">
+        <label for="slug" class="form-label">Slug</label>
+        <input type="text" class="form-control" id="slug" name="slug" required value="{{categoria.slug}}">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Salvar categoria</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+

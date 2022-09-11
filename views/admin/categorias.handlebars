@@ -1,3 +1,27 @@
 <h2>Lista de categorias: </h2>
 <hr>
-<button type="button" class="btn btn-success" onclick="window.open('/admin/categorias/adicionar', '_self');">Nova categoria</button>
+<button type="button" class="btn btn-success" onclick="window.open('/admin/categorias/formulario/nova', '_self');">Nova categoria</button>
+
+{{#each categorias}}
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <h4>{{nome}}</h4>
+          <small>Slug: {{slug}}</small>
+          <p><small class="text-muted">Data de criação: {{inclusao}}</small></p>
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-secondary mt-2" onclick="window.open('/admin/categorias/formulario/{{_id}}', '_self');">Editar</button>
+          <form action="/admin/categorias/excluir/" method="post">
+          <input type="hidden" name="id" value="{{_id}}">
+          <button type="submit" class="btn btn-danger mt-2">Excluir</button>
+          </form>
+        </div>
+      </div>  
+    </div>
+  </div>
+
+{{else}}
+
+{{/each}}
