@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  db:
+    image: 'mongo:6.0.1'
+    #container_name: db
+    restart: always
+    env_file: .env
+    working_dir: /application
+    volumes:
+      - bancos_mongo:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASS}
+    ports:
+      - ${DB_PORT}:27017
+    networks:
+      - rede_node_blog
+
+  app:
+    #carrega as informações do Dockerfile
+    build: .
+    command: npm start
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    restart: always
+    networks:
+      - rede_node_blog
+
+networks:
+  rede_node_blog:
+    driver: bridge
+
+volumes:
+  bancos_mongo:
