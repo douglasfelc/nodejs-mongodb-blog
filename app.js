@@ -10,6 +10,10 @@ const app = express()
 
 
 /** Configurações */
+app.use(express.static(__dirname + '/public/'))
+app.use('/scripts', express.static(__dirname + '/node_modules/jquery/dist/'))
+app.use('/scripts', express.static(__dirname + '/node_modules/bootstrap/dist/js/'))
+
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 

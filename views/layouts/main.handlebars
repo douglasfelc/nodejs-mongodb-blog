@@ -1,12 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog NodeJS</title>
-</head>
-<body>
-  {{{body}}}
-</body>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/css/bootstrap/bootstrap.css" rel="stylesheet">
+
+    <title>Blog NodeJS</title>
+  </head>
+  <body>
+    <!-- Importa o navbar do partials -->
+    {{>_navbar}}
+
+    {{{body}}}
+
+
+    <!-- Jquery -->
+    <script src="/scripts/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="/scripts/bootstrap.bundle.js"></script>
+  </body>
 </html>
