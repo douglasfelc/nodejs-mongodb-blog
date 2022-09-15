@@ -27,10 +27,11 @@ router.get('/categorias', (requisicao, resposta) => {
 router.get('/categorias/formulario/:id', (requisicao, resposta) => {
 
   if( requisicao.params.id == 'nova' ){
-    global.dados = {id: 'nova'}
+    var categoria = {id: 'nova'}
+    resposta.render("admin/categorias_formulario", {categoria: categoria})
   }else{
     Categoria.findOne({_id:requisicao.params.id}).lean().then((categoria) => {
-      global.dados = categoria
+      resposta.render("admin/categorias_formulario", {categoria: categoria})
 
     }).catch((erro) => {
       console.log("Esta categoria não existe")
@@ -38,7 +39,7 @@ router.get('/categorias/formulario/:id', (requisicao, resposta) => {
     })
   }
 
-  resposta.render("admin/categorias_formulario", {categoria: dados})  
+  
 })
 
 router.post('/categorias/salvar', (requisicao, resposta) => {
