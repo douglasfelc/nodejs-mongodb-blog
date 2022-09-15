@@ -18,6 +18,7 @@ router.get('/categorias', (requisicao, resposta) => {
   Categoria.find().lean().sort({nome:'asc'}).then((categorias) => {
     resposta.render("admin/categorias", {categorias: categorias})
   }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro ao listar as categorias, tente novamente mais tarde.")
     console.log("Erro ao listar as categorias "+erro)
     resposta.redirect("/admin")
   })
@@ -34,7 +35,8 @@ router.get('/categorias/formulario/:id', (requisicao, resposta) => {
       resposta.render("admin/categorias_formulario", {categoria: categoria})
 
     }).catch((erro) => {
-      console.log("Esta categoria não existe")
+      requisicao.flash("mensagemErro", "Esta categoria não existe.")
+      console.log("Esta categoria não existe: "+erro)
       resposta.redirect("/admin/categorias")
     })
   }
@@ -73,15 +75,17 @@ router.post('/categorias/salvar', (requisicao, resposta) => {
 
         /** Salva o objeto */
         categoria.save().then(() => {
-          console.log("Categoria alterada com sucesso")
+          requisicao.flash("mensagemSucesso", "Categoria alterada com sucesso!")
           resposta.redirect("/admin/categorias")
 
         }).catch((erro) => {
+          requisicao.flash("mensagemErro", "Houve um erro ao alterar a categoria")
           console.log("Erro ao alterar a categoria: "+erro)
           resposta.redirect("/admin/categorias")
         })
   
       }).catch((erro) => {
+        requisicao.flash("mensagemErro", "Esta categoria não existe")
         console.log("Esta categoria não existe: "+erro)
         resposta.redirect("/admin/categorias")
       })
@@ -94,9 +98,11 @@ router.post('/categorias/salvar', (requisicao, resposta) => {
       }
 
       new Categoria(novaCategoria).save().then(() => {
+        requisicao.flash("mensagemSucesso", "Categoria criada com sucesso")
         resposta.redirect("/admin/categorias")
       }).catch((erro) => {
-        console.log("Erro ao salvar a categoria "+erro)
+        requisicao.flash("mensagemErro", "Houve um erro ao salvar a categoria. Tente novamente")
+        console.log("Erro ao salvar a categoria: "+erro)
         resposta.redirect("/admin")
       })
     }
@@ -107,9 +113,10 @@ router.post('/categorias/salvar', (requisicao, resposta) => {
 
 router.post('/categorias/excluir', (requisicao, resposta) => {
   Categoria.remove({_id: requisicao.body.id}).then(() => {
-    console.log("Categoria excluída com sucesso")
+    requisicao.flash("mensagemSucesso", "Categoria excluída com sucesso")
     resposta.redirect("/admin/categorias")
   }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro ao excluir a  categoria")
     console.log("Erro ao excluir a categoria "+erro)
     resposta.redirect("/admin/categorias")
   })
