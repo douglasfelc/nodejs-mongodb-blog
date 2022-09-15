@@ -5,11 +5,34 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const admin = require("./routes/admin")
 
+const session = require("express-session")
+const flash = require("connect-flash")
+
+
 /** Instanciar o express */
 const app = express()
 
 
 /** Configurações */
+//Sessão
+app.use(
+  session({
+    secret: "j7h5_pv3!u$9",
+    resave: true,
+    saveUninitialized: true
+  })
+)
+app.use(flash())
+
+//Middleware
+app.use((requisicao, resposta, next) => {
+  /** Variáveis globais */
+  resposta.locals.mensagemSucesso = requisicao.flash("mensagemSucesso")
+  resposta.locals.mensagemErro = requisicao.flash("mensagemErro")
+
+  next(); //continuar requisição
+})
+
 app.use(express.static(__dirname + '/public/'))
 app.use('/scripts', express.static(__dirname + '/node_modules/jquery/dist/'))
 app.use('/scripts', express.static(__dirname + '/node_modules/bootstrap/dist/js/'))
