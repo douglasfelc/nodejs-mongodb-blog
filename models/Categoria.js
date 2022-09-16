@@ -14,7 +14,7 @@ const Categoria = new Schema({
   inclusao: {
     type: Date,
     default: Date.now(),
-    ref: 'Data e hora da inclusão'
+    comment: 'Data e hora da inclusão'
   }
 })
 

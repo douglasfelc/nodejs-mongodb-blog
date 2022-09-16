@@ -1,0 +1,26 @@
+<h2>Lista de postagens: </h2>
+<hr>
+<button type="button" class="btn btn-success" onclick="window.open('/admin/postagens/formulario/nova', '_self');">Nova postagem</button>
+
+{{#each postagens}}
+  <div class="card mt-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <h4>{{titulo}}</h4>
+          <p>{{descricao}}</p>
+          <p><small>Slug: {{slug}}</small></p>
+          <p><small class="text-muted">Data: {{data}}</small></p>
+          <p><small>Categoria: {{categoria.nome}}</small></p>
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-secondary mt-2" onclick="window.open('/admin/postagens/formulario/{{_id}}', '_self');">Editar</button>
+          <button type="button" class="btn btn-danger mt-2" onclick="window.open('/admin/postagens/formulario/{{_id}}', '_self');">Excluir</button>
+        </div>
+      </div>  
+    </div>
+  </div>
+
+{{else}}
+  <p class="mt-4 text-muted">Nenhuma postagem registrada</p>
+{{/each}}

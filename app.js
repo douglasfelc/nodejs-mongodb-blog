@@ -40,7 +40,48 @@ app.use('/scripts', express.static(__dirname + '/node_modules/bootstrap/dist/js/
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 
-app.engine('handlebars', handlebars.engine({defaultLayout: 'main'}) );
+app.engine('handlebars', handlebars.engine(
+  {defaultLayout: 'main',
+  helpers:{
+    ifCond: (v1, operator, v2, options) => {
+
+      /** Se o v1 e v2 não estiverem definidos */
+      if( !v1 || typeof v1 == undefined || v1 == null
+       || !v2 || typeof v2 == undefined || v2 == null ){
+        return false
+      }else{
+        v1 = v1.toString()
+        v2 = v2.toString()
+
+        switch (operator) {
+          case '==':
+            return (v1 == v2) ? options.fn(this) : options.inverse(this);
+          case '===':
+            return (v1 === v2) ? options.fn(this) : options.inverse(this);
+          case '!=':
+            return (v1 != v2) ? options.fn(this) : options.inverse(this);
+          case '!==':
+            return (v1 !== v2) ? options.fn(this) : options.inverse(this);
+          case '<':
+            return (v1 < v2) ? options.fn(this) : options.inverse(this);
+          case '<=':
+            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+          case '>':
+            return (v1 > v2) ? options.fn(this) : options.inverse(this);
+          case '>=':
+            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+          case '&&':
+            return (v1 && v2) ? options.fn(this) : options.inverse(this);
+          case '||':
+            return (v1 || v2) ? options.fn(this) : options.inverse(this);
+          default:
+            return options.inverse(this);
+        }
+      }
+
+    }
+  }
+}) );
 app.set('view engine', 'handlebars')
 
 mongoose.Promise = global.Promise
