@@ -8,6 +8,8 @@ const admin = require("./routes/admin")
 const session = require("express-session")
 const flash = require("connect-flash")
 
+require("./models/Postagem")
+const Postagem = mongoose.model("postagens")
 
 /** Instanciar o express */
 const app = express()
@@ -106,7 +108,35 @@ mongoose.connect(
 
 /** Rotas */
 app.get('/', (requisicao, resposta) => {
-  resposta.send("Página principal")
+
+  Postagem.find().populate("categoria").lean().sort({data: "DESC"}).then((postagens) => {
+    resposta.render("index", {postagens:postagens})
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro interno")
+    resposta.redirect("/404")
+  })
+  
+})
+
+app.get('/postagem/:slug', (requisicao, resposta) => {
+
+  Postagem.findOne({slug: requisicao.params.slug}).populate("categoria").lean().then((postagem) => {
+
+    /** Se existe */
+    if( postagem ){
+      resposta.render("postagem/index", {postagem: postagem})
+    }else{
+      requisicao.flash("mensagemErro", "Esta postagem não existe.")
+    }
+
+  }).catch((erro) => {
+    console.log("CATCH: Esta postagem não existe: "+erro)
+    resposta.redirect("/")
+  })
+})
+
+app.get("/404", (requisicao, resposta) => {
+  resposta.send("Erro 404!")
 })
 
 app.use('/admin', admin)

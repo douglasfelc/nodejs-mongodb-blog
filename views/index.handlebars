@@ -1,0 +1,25 @@
+<div class="h-100 p-5 bg-light border rounded-3">
+  <h1 class="display-5">Bem vindo ao Blog do Node</h1>
+  <p>Or, keep it light and add a border for some added definition to the boundaries of your content. Be sure to look under the hood at the source HTML here as we've adjusted the alignment and sizing of both column's content for equal-height.</p>
+  <button class="btn btn-outline-secondary" type="button">Example button</button>
+</div>
+
+
+<h2 class="mt-4">Postagens recentes:</h2>
+
+{{#each postagens}}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h5 class="card-title">{{titulo}}</h5>
+      <p class="card-text">{{descricao}}</p>
+      <a href="/postagem/{{slug}}" class="btn btn-primary">Leia mais</a>
+
+      <hr>
+      <p class="m-0"><small>Categoria: {{categoria.nome}}</small></p>
+      <p class="m-0"><small>Data: {{data}}</small></p>
+    </div>
+  </div>
+
+{{else}}
+  <h5>Nenhuma postagem</h5>
+{{/each}}
