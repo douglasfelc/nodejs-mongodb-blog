@@ -1,9 +1,15 @@
 {{#if mensagemSucesso}}
-  <div class="alert alert-success">{{mensagemSucesso}}</div>
-
+  <div class="alert alert-success">
+    <div class="container">
+      {{mensagemSucesso}}
+    </div>
+  </div>
 {{/if}}
 
 {{#if mensagemErro}}
-  <div class="alert alert-danger">{{mensagemErro}}</div>
-
+  <div class="alert alert-danger">
+    <div class="container">
+      {{mensagemErro}}
+    </div>
+  </div>
 {{/if}}

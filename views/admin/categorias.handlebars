@@ -1,6 +1,6 @@
-<h2>Lista de categorias: </h2>
+<h2>Categorias</h2>
 <hr>
-<button type="button" class="btn btn-success" onclick="window.open('/admin/categorias/formulario/nova', '_self');">Nova categoria</button>
+<button type="button" class="btn btn-dark" onclick="window.open('/admin/categorias/formulario/nova', '_self');">Nova categoria</button>
 
 {{#each categorias}}
   <div class="card mt-3">
@@ -23,5 +23,5 @@
   </div>
 
 {{else}}
-  <p class="mt-4 text-muted">Nenhuma categoria registrada</p>
+  <p class="mt-4 text-muted">Nenhuma categoria cadastrada</p>
 {{/each}}

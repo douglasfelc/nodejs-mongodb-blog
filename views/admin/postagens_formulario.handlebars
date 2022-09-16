@@ -1,8 +1,10 @@
+<h2>Postagens</h2>
+<hr>
 {{#each erros}}
   <div class="alert alert-danger">{{texto}}</div>
 {{/each}}
 
-<div class="card">
+<div class="card mt-4">
   <div class="card-header">
     {{#if postagem.id}}
       Nova postagem
@@ -16,7 +18,7 @@
       <input type="hidden" name="id" value="{{postagem._id}}">
       <div class="col-12">
         <label for="titulo" class="form-label">Título</label>
-        <input type="text" class="form-control" id="titulo" name="titulo" required value="{{postagem.titulo}}">
+        <input type="text" class="form-control" id="titulo" name="titulo" required value="{{postagem.titulo}}" placeholder="Digite o título de sua postagem">
       </div>
       <div class="col-md-6">
         <label for="categoria" class="form-label">Categoria</label>
@@ -25,24 +27,24 @@
           {{#each categorias}}
             <option value="{{_id}}"{{#ifCond ../postagem.categoria '==' _id}} selected{{/ifCond}}>{{nome}}</option>
           {{else}}
-            <option value="0">Nenhuma categoria registrada</option>
+            <option value="0">Nenhuma categoria cadastrada</option>
           {{/each}}
         </select>
       </div>
       <div class="col-md-6">
         <label for="slug" class="form-label">Slug</label>
-        <input type="text" class="form-control" id="slug" name="slug" required value="{{postagem.slug}}">
+        <input type="text" class="form-control" id="slug" name="slug" required value="{{postagem.slug}}" placeholder="Utilize letras minúsculas, letras, números e hífens">
       </div>
       <div class="col-12">
         <label for="conteudo" class="form-label">Descrição</label>
-        <input type="text" class="form-control" id="descricao" name="descricao" required value="{{postagem.descricao}}">
+        <input type="text" class="form-control" id="descricao" name="descricao" required value="{{postagem.descricao}}" placeholder="Digite uma breve descrição">
       </div>
       <div class="col-12">
         <label for="conteudo" class="form-label">Conteúdo</label>
         <textarea class="form-control" placeholder="Digite o conteúdo de sua postagem" id="conteudo" name="conteudo" style="height: 100px" required>{{postagem.conteudo}}</textarea>
       </div>
       <div class="col-12">
-        <button type="submit" class="btn btn-primary">Salvar postagem</button>
+        <button type="submit" class="btn btn-dark">Salvar postagem</button>
       </div>
     </form>
 

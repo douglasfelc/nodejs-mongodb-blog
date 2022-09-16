@@ -3,10 +3,15 @@ const express = require('express')
 const handlebars = require('express-handlebars')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
-const admin = require("./routes/admin")
+
+const passport = require('passport')
+require("./config/auth")(passport)
 
 const session = require("express-session")
 const flash = require("connect-flash")
+
+const admin = require("./routes/admin")
+const usuario = require("./routes/usuario")
 
 require("./models/Postagem")
 const Postagem = mongoose.model("postagens")
@@ -18,7 +23,7 @@ const app = express()
 
 
 /** Configurações */
-//Sessão
+//Sessão(1º)
 app.use(
   session({
     secret: "j7h5_pv3!u$9",
@@ -26,13 +31,23 @@ app.use(
     saveUninitialized: true
   })
 )
+
+//Passport(2º)
+app.use(passport.initialize())
+app.use(passport.session())
+
+//Flash(3º)
 app.use(flash())
 
 //Middleware
 app.use((requisicao, resposta, next) => {
   /** Variáveis globais */
   resposta.locals.mensagemSucesso = requisicao.flash("mensagemSucesso")
-  resposta.locals.mensagemErro = requisicao.flash("mensagemErro")
+  resposta.locals.mensagemErro = requisicao.flash("mensagemErro")+requisicao.flash("error")
+
+  //Armazena os dados do usuário logado em uma variável global
+  //requisicao.user: criado pelo passport com os dados do usuário logado
+  resposta.locals.usuario = requisicao.user || null
 
   next(); //continuar requisição
 })
@@ -180,6 +195,7 @@ app.get("/404", (requisicao, resposta) => {
 })
 
 app.use('/admin', admin)
+app.use('/usuario', usuario)
 
 
 /** Outros */

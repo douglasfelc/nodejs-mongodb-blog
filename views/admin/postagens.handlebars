@@ -1,6 +1,6 @@
-<h2>Lista de postagens: </h2>
+<h2>Postagens</h2>
 <hr>
-<button type="button" class="btn btn-success" onclick="window.open('/admin/postagens/formulario/nova', '_self');">Nova postagem</button>
+<button type="button" class="btn btn-dark" onclick="window.open('/admin/postagens/formulario/nova', '_self');">Nova postagem</button>
 
 {{#each postagens}}
   <div class="card mt-3">
@@ -22,5 +22,5 @@
   </div>
 
 {{else}}
-  <p class="mt-4 text-muted">Nenhuma postagem registrada</p>
+  <p class="mt-4 text-muted">Nenhuma postagem cadastrada</p>
 {{/each}}

@@ -6,18 +6,18 @@ const Categoria = mongoose.model("categorias")
 require("../models/Postagem")
 const Postagem = mongoose.model("postagens")
 
+//Pega somente a função administrador
+const {administrador} = require("../helpers/administrador")
 
-router.get('/', (requisicao, resposta) => {
+
+/** Rota principal */
+router.get('/', administrador, (requisicao, resposta) => {
   resposta.render("admin/index")
-})
-
-router.get('/posts', (requisicao, resposta) => {
-  resposta.send("Página de posts")
 })
 
 
 /** Categorias */
-router.get('/categorias', (requisicao, resposta) => {
+router.get('/categorias', administrador, (requisicao, resposta) => {
 
   Categoria.find().lean().sort({nome:'asc'}).then((categorias) => {
     resposta.render("admin/categorias", {categorias: categorias})
@@ -29,7 +29,7 @@ router.get('/categorias', (requisicao, resposta) => {
 
 })
 
-router.get('/categorias/formulario/:id', (requisicao, resposta) => {
+router.get('/categorias/formulario/:id', administrador, (requisicao, resposta) => {
 
   /** Se for nova postagem */
   if( requisicao.params.id == 'nova' ){
@@ -50,7 +50,7 @@ router.get('/categorias/formulario/:id', (requisicao, resposta) => {
 
 })
 
-router.post('/categorias/salvar', (requisicao, resposta) => {
+router.post('/categorias/salvar', administrador, (requisicao, resposta) => {
 
   var erros = []
   /** Verifica se o nome foi preenchido */
@@ -132,7 +132,7 @@ router.post('/categorias/excluir', (requisicao, resposta) => {
 
 
 /** Postagens */
-router.get('/postagens', (requisicao, resposta) => {
+router.get('/postagens', administrador, (requisicao, resposta) => {
 
   /** Postagem com as categorias do campo "categoria" */
   Postagem.find().populate("categoria").lean().sort({nome:'asc'}).then((postagens) => {
@@ -145,7 +145,7 @@ router.get('/postagens', (requisicao, resposta) => {
 
 })
 
-router.get('/postagens/formulario/:id', (requisicao, resposta) => {
+router.get('/postagens/formulario/:id', administrador, (requisicao, resposta) => {
 
   /** Se for nova postagem */
   if( requisicao.params.id == 'nova' ){
@@ -182,7 +182,7 @@ router.get('/postagens/formulario/:id', (requisicao, resposta) => {
 
 })
 
-router.post('/postagens/salvar', (requisicao, resposta) => {
+router.post('/postagens/salvar', administrador, (requisicao, resposta) => {
 
   var erros = []
   /** Verifica se o titulo foi preenchido */
@@ -271,7 +271,7 @@ router.post('/postagens/salvar', (requisicao, resposta) => {
 })
 
 //Excluir via _GET
-router.get('/postagens/excluir', (requisicao, resposta) => {
+router.get('/postagens/excluir', administrador, (requisicao, resposta) => {
   Postagem.remove({_id: requisicao.body.id}).then(() => {
     requisicao.flash("mensagemSucesso", "Postagem excluída com sucesso")
     resposta.redirect("/admin/postagens")
