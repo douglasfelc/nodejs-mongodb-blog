@@ -10,6 +10,8 @@ const flash = require("connect-flash")
 
 require("./models/Postagem")
 const Postagem = mongoose.model("postagens")
+require("./models/Categoria")
+const Categoria = mongoose.model("categorias")
 
 /** Instanciar o express */
 const app = express()
@@ -106,6 +108,7 @@ mongoose.connect(
 });
 
 
+
 /** Rotas */
 app.get('/', (requisicao, resposta) => {
 
@@ -131,6 +134,43 @@ app.get('/postagem/:slug', (requisicao, resposta) => {
 
   }).catch((erro) => {
     console.log("CATCH: Esta postagem não existe: "+erro)
+    resposta.redirect("/")
+  })
+})
+
+app.get('/categorias', (requisicao, resposta) => {
+
+  Categoria.find().lean().sort({nome:'asc'}).then((categorias) => {
+    resposta.render("categorias/index", {categorias: categorias})
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro ao listar as categorias, tente novamente mais tarde.")
+    console.log("Erro ao listar as categorias "+erro)
+    resposta.redirect("/")
+  })
+  
+})
+
+app.get('/categoria/:slug', (requisicao, resposta) => {
+
+  Categoria.findOne({slug: requisicao.params.slug}).lean().then((categoria) => {
+
+    /** Se existe */
+    if( categoria ){
+      Postagem.find({categoria: categoria._id}).lean().then((postagens) => {
+        resposta.render("categorias/postagens", {postagens:postagens, categoria: categoria})
+      }).catch((erro) => {
+        requisicao.flash("mensagemErro", "Houve um erro ao listar as postagens!")
+        resposta.redirect("/")
+      })
+
+    }else{
+      requisicao.flash("mensagemErro", "Esta categoria não existe.")
+      resposta.redirect("/")
+    }
+
+  }).catch((erro) => {
+    console.log("CATCH: Esta categoria não existe: "+erro)
+    requisicao.flash("mensagemErro", "Esta categoria não existe.")
     resposta.redirect("/")
   })
 })
