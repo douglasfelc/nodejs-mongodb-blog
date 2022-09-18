@@ -10,12 +10,12 @@
           <h4>{{titulo}}</h4>
           <p>{{descricao}}</p>
           <p class="small">Slug: {{slug}}</p>
-          <p class="small text-muted">Data: {{data}}</p>
+          <p class="small text-muted">Data: {{inclusao}}</p>
           <p class="small">Categoria: {{categoria.nome}}</p>
         </div>
         <div class="col-sm-2">
           <button type="button" class="btn btn-secondary mt-2" onclick="window.open('/admin/postagens/formulario/{{_id}}', '_self');">Editar</button>
-          <button type="button" class="btn btn-danger mt-2" onclick="window.open('/admin/postagens/formulario/{{_id}}', '_self');">Excluir</button>
+          <button type="button" class="btn btn-danger mt-2" onclick="window.open('/admin/postagens/excluir/{{_id}}', '_self');">Excluir</button>
         </div>
       </div>  
     </div>

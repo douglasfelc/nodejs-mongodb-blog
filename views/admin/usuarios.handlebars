@@ -1,0 +1,46 @@
+<h2>Usuários</h2>
+<hr>
+<button type="button" class="btn btn-dark" onclick="window.open('/usuario/cadastro', '_self');">Novo usuário</button>
+
+
+<table class="table mt-3">
+  <thead>
+    <tr>
+      <th scope="col">Id</th>
+      <th scope="col">Nome</th>
+      <th scope="col">Tipo</th>
+      <th scope="col">Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{#each usuarios}}
+    <tr>
+      <th class="align-middle" scope="row">{{_id}}</th>
+      <td class="align-middle">{{nome}}</td>
+      <td class="align-middle">
+        <form action="/admin/usuarios/administrador/" method="POST">
+          <input type="hidden" name="id" value="{{_id}}">
+          <div class="input-group">
+            <select id="administrador" name="administrador" class="form-select">
+              <option value="0">Membro</option>
+              <option value="1"{{#if administrador}} selected{{/if}}>Administrador</option>
+            </select>
+            <div class="input-group-append">
+              <button class="btn btn-dark rounded-0" type="submit">Alterar</button>
+            </div>
+          </div>
+        </form>
+      </td>
+      <td class="align-middle">
+        <button type="button" class="btn btn-secondary" onclick="window.open('/usuario/cadastro/{{_id}}', '_self');">Editar</button>
+        <button type="button" class="btn btn-danger" onclick="window.open('/admin/usuarios/excluir/{{_id}}', '_self');">Excluir</button>
+      </td>
+    </tr>
+
+  {{else}}
+    <tr>
+      <td colspan="4">Nenhum usuário cadastrado</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>

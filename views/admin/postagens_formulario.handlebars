@@ -18,7 +18,7 @@
       <input type="hidden" name="id" value="{{postagem._id}}">
       <div class="col-12">
         <label for="titulo" class="form-label">Título</label>
-        <input type="text" class="form-control" id="titulo" name="titulo" required value="{{postagem.titulo}}" placeholder="Digite o título de sua postagem">
+        <input type="text" class="form-control" id="titulo" name="titulo" required value="{{postagem.titulo}}" placeholder="Digite o título de sua postagem" minlength="3" maxlength="250">
       </div>
       <div class="col-md-6">
         <label for="categoria" class="form-label">Categoria</label>
@@ -33,15 +33,15 @@
       </div>
       <div class="col-md-6">
         <label for="slug" class="form-label">Slug</label>
-        <input type="text" class="form-control" id="slug" name="slug" required value="{{postagem.slug}}" placeholder="Utilize letras minúsculas, letras, números e hífens">
+        <input type="text" class="form-control" id="slug" name="slug" required value="{{postagem.slug}}" placeholder="Utilize letras minúsculas, números e hífens" minlength="3" maxlength="250" pattern="[a-z0-9-]+">
       </div>
       <div class="col-12">
         <label for="conteudo" class="form-label">Descrição</label>
-        <input type="text" class="form-control" id="descricao" name="descricao" required value="{{postagem.descricao}}" placeholder="Digite uma breve descrição">
+        <input type="text" class="form-control" id="descricao" name="descricao" required value="{{postagem.descricao}}" placeholder="Digite uma breve descrição" minlength="3" maxlength="250">
       </div>
       <div class="col-12">
         <label for="conteudo" class="form-label">Conteúdo</label>
-        <textarea class="form-control" placeholder="Digite o conteúdo de sua postagem" id="conteudo" name="conteudo" style="height: 100px" required>{{postagem.conteudo}}</textarea>
+        <textarea class="form-control" placeholder="Digite o conteúdo de sua postagem" id="conteudo" name="conteudo" style="height: 100px" minlength="3" maxlength="250" required>{{postagem.conteudo}}</textarea>
       </div>
       <div class="col-12">
         <button type="submit" class="btn btn-dark">Salvar postagem</button>

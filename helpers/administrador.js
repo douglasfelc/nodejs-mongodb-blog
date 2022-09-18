@@ -9,5 +9,16 @@ module.exports = {
 
     requisicao.flash("mensagemErro", "Você deve estar logado como administrador")
     resposta.redirect("/")
+  },
+  /** Define o membro: */
+  membro: function(requisicao, resposta, next){
+
+    /** Verifica se está autenticado */
+    if(requisicao.isAuthenticated()){
+      return next()
+    }
+
+    requisicao.flash("mensagemErro", "Você deve estar logado")
+    resposta.redirect("/")
   }
 }

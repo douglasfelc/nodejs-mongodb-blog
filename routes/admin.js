@@ -5,6 +5,8 @@ require("../models/Categoria")
 const Categoria = mongoose.model("categorias")
 require("../models/Postagem")
 const Postagem = mongoose.model("postagens")
+require("../models/Usuario")
+const Usuario = mongoose.model("usuarios")
 
 //Pega somente a função administrador
 const {administrador} = require("../helpers/administrador")
@@ -14,6 +16,61 @@ const {administrador} = require("../helpers/administrador")
 router.get('/', administrador, (requisicao, resposta) => {
   resposta.render("admin/index")
 })
+
+
+/** Usuários */
+router.get('/usuarios', administrador, (requisicao, resposta) => {
+
+  Usuario.find().lean().sort({nome:'asc'}).then((usuarios) => {
+    resposta.render("admin/usuarios", {usuarios: usuarios})
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro ao listar as usuarios, tente novamente mais tarde.")
+    console.log("Erro ao listar as usuarios "+erro)
+    resposta.redirect("/admin")
+  })
+
+})
+
+//Excluir via _GET
+router.get('/usuarios/excluir/:id', administrador, (requisicao, resposta) => {
+
+  Usuario.deleteOne({_id: requisicao.params.id}).then(() => {
+    requisicao.flash("mensagemSucesso", "Usuário excluído com sucesso")
+    resposta.redirect("/admin/usuarios")
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Houve um erro ao excluir o usuário")
+    console.log("Erro ao excluir o usuário "+erro)
+    resposta.redirect("/admin/usuarios")
+  })
+
+})
+
+//Alterar o tipo do usuário: administrador ou membro
+router.post('/usuarios/administrador', administrador, (requisicao, resposta) => {
+
+  Usuario.findOne({_id:requisicao.body.id}).then((usuario) => {
+    /** Passa os valores do formulário para o objeto */
+    usuario.administrador = requisicao.body.administrador
+
+    /** Salva o objeto */
+    usuario.save().then(() => {
+      requisicao.flash("mensagemSucesso", "Usuário alterado com sucesso!")
+      resposta.redirect("/admin/usuarios")
+
+    }).catch((erro) => {
+      requisicao.flash("mensagemErro", "Houve um erro ao alterar o usuário")
+      console.log("Erro ao alterar o usuário: "+erro)
+      resposta.redirect("/admin/usuarios")
+    })
+
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Este usuário não existe")
+    console.log("Este usuário não existe: "+erro)
+    resposta.redirect("/admin/usuarios")
+  })
+
+})
+
 
 
 /** Categorias */
@@ -118,8 +175,8 @@ router.post('/categorias/salvar', administrador, (requisicao, resposta) => {
 })
 
 //Excluir via _POST
-router.post('/categorias/excluir', (requisicao, resposta) => {
-  Categoria.remove({_id: requisicao.body.id}).then(() => {
+router.post('/categorias/excluir', administrador, (requisicao, resposta) => {
+  Categoria.deleteOne({_id: requisicao.body.id}).then(() => {
     requisicao.flash("mensagemSucesso", "Categoria excluída com sucesso")
     resposta.redirect("/admin/categorias")
   }).catch((erro) => {
@@ -271,12 +328,12 @@ router.post('/postagens/salvar', administrador, (requisicao, resposta) => {
 })
 
 //Excluir via _GET
-router.get('/postagens/excluir', administrador, (requisicao, resposta) => {
-  Postagem.remove({_id: requisicao.body.id}).then(() => {
+router.get('/postagens/excluir/:id', administrador, (requisicao, resposta) => {
+  Postagem.deleteOne({_id: requisicao.params.id}).then(() => {
     requisicao.flash("mensagemSucesso", "Postagem excluída com sucesso")
     resposta.redirect("/admin/postagens")
   }).catch((erro) => {
-    requisicao.flash("mensagemErro", "Houve um erro ao excluir a  postagem")
+    requisicao.flash("mensagemErro", "Houve um erro ao excluir a postagem")
     console.log("Erro ao excluir a postagem "+erro)
     resposta.redirect("/admin/postagens")
   })

@@ -45,9 +45,14 @@ app.use((requisicao, resposta, next) => {
   resposta.locals.mensagemSucesso = requisicao.flash("mensagemSucesso")
   resposta.locals.mensagemErro = requisicao.flash("mensagemErro")+requisicao.flash("error")
 
-  //Armazena os dados do usuário logado em uma variável global
-  //requisicao.user: criado pelo passport com os dados do usuário logado
-  resposta.locals.usuario = requisicao.user || null
+  /** requisicao.user: criado pelo passport com os dados do usuário logado
+      Se tiver usuário na sessão */
+  if( requisicao.user ){
+    /** Armazena os dados em JSON em uma variável global */
+    resposta.locals.usuarioLogado = requisicao.user.toJSON()
+  }else{
+    resposta.locals.usuarioLogado = null
+  }
 
   next(); //continuar requisição
 })
@@ -127,7 +132,7 @@ mongoose.connect(
 /** Rotas */
 app.get('/', (requisicao, resposta) => {
 
-  Postagem.find().populate("categoria").lean().sort({data: "DESC"}).then((postagens) => {
+  Postagem.find().populate("categoria").lean().sort({inclusao: "DESC"}).then((postagens) => {
     resposta.render("index", {postagens:postagens})
   }).catch((erro) => {
     requisicao.flash("mensagemErro", "Houve um erro interno")

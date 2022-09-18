@@ -1,11 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
   <div class="container">
+    {{#if usuarioLogado.administrador}}
     <a class="navbar-brand" href="/admin">Administração</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    {{else}}
+    <a class="navbar-brand" href="/">Membro</a>
+    {{/if}}
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin" aria-controls="navbarAdmin" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse" id="navbarAdmin">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {{#if usuarioLogado.administrador}}
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/admin">Início</a>
         </li>
@@ -15,8 +21,20 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin/postagens">Postagens</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/admin/usuarios">Usuários</a>
+        </li>
+        {{/if}}
       </ul>
-      <button type="button" class="btn btn-dark" onclick="window.open('/usuario/logout', '_self');">Sair</button>
+      <div class="dropdown">
+        <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Olá {{usuarioLogado.nome}}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-lg-end">
+          <li><a class="dropdown-item" href="/usuario/cadastro/{{usuarioLogado._id}}">Editar perfil</a></li>
+          <li><a class="dropdown-item" href="/usuario/logout">Sair</a></li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>

@@ -6,13 +6,17 @@ const Usuario = mongoose.model("usuarios")
 const bcrypt = require("bcryptjs")
 const passport = require("passport")
 
+//Pega somente a função membro
+const {membro} = require("../helpers/administrador")
+
+
 router.get("/login", (requisicao, resposta) => {
   resposta.render("usuario/login", {layout: 'login'})
 })
 
 router.post("/login", (requisicao, resposta, next) => {
   passport.authenticate("local", {
-    successRedirect: "/admin",
+    successRedirect: "/",
     failureRedirect: "/usuario/login",
     failureFlash: true
   })(requisicao, resposta, next)
@@ -35,6 +39,20 @@ router.get("/cadastro", (requisicao, resposta) => {
   resposta.render("usuario/cadastro")
 })
 
+/** Se for edição, deve estar logado */
+router.get('/cadastro/:id', membro, (requisicao, resposta) => {
+
+  Usuario.findOne({_id:requisicao.params.id}).lean().then((usuario) => {
+    resposta.render("usuario/cadastro", {usuario: usuario})
+
+  }).catch((erro) => {
+    requisicao.flash("mensagemErro", "Este usuário não existe.")
+    console.log("Esta usuario não existe: "+erro)
+    resposta.redirect("/")
+  })
+
+})
+
 router.post('/salvar', (requisicao, resposta) => {
 
   var erros = []
@@ -48,17 +66,20 @@ router.post('/salvar', (requisicao, resposta) => {
     erros.push({texto: "E-mail inválido"})
   }
 
-  /** Verifica se a senha foi preenchida */
-  if( !requisicao.body.senha || typeof requisicao.body.senha == undefined || requisicao.body.senha == null ){
-    erros.push({texto: "Senha inválida"})
-  }
-  /** Verifica se a senha é muito curta */
-  else if(requisicao.body.senha.length < 4){
-    erros.push({texto: "Senha muito fraca. A senha deve possuir pelo menos 4 caracteres"})
-  }
-  /** Verifica se as senhas foram digitadas iguais */
-  else if(requisicao.body.senha != requisicao.body.senha2){
-    erros.push({texto: "As senhas informadas são diferentes, tente novamente"})
+  /** Se for inclusão ou edição e foi enviado uma nova senha */
+  if( !requisicao.body.id || (requisicao.body.id && requisicao.body.senha) ){
+    /** Verifica se a senha foi preenchida */
+    if( !requisicao.body.senha || typeof requisicao.body.senha == undefined || requisicao.body.senha == null ){
+      erros.push({texto: "Senha inválida"})
+    }
+    /** Verifica se a senha é muito curta */
+    else if(requisicao.body.senha.length < 4){
+      erros.push({texto: "Senha muito fraca. A senha deve possuir pelo menos 4 caracteres"})
+    }
+    /** Verifica se as senhas foram digitadas iguais */
+    else if(requisicao.body.senha != requisicao.body.senha2){
+      erros.push({texto: "As senhas informadas são diferentes, tente novamente"})
+    }
   }
 
   /** Se tiver erros */
@@ -76,18 +97,49 @@ router.post('/salvar', (requisicao, resposta) => {
         /** Passa os valores do formulário para o objeto */
         categoria.nome = requisicao.body.nome
         categoria.email = requisicao.body.email
-        categoria.senha = requisicao.body.senha
 
-        /** Salva o objeto */
-        categoria.save().then(() => {
-          requisicao.flash("mensagemSucesso", "Usuário alterado com sucesso!")
-          resposta.redirect("/admin/categorias")
+        /** Se foi enviado uma nova senha */
+        if( requisicao.body.senha ){
+          categoria.senha = requisicao.body.senha
 
-        }).catch((erro) => {
-          requisicao.flash("mensagemErro", "Houve um erro ao alterar o usuário")
-          console.log("Erro ao alterar o usuário: "+erro)
-          resposta.redirect("/admin/categorias")
-        })
+          /** Encriptar a senha */
+          bcrypt.genSalt(10, (erro, salt) => {
+            bcrypt.hash(categoria.senha, salt, (erro, hash) => {
+              if(erro){
+                requisicao.flash("mensagemErro", "Houve um erro durante a alteração do usuário")
+                console.log("Erro durante o hash: "+erro)
+                resposta.redirect("/")
+              }else{
+                /** Preencha a senha com o hash */
+                categoria.senha = hash
+
+                categoria.save().then(() => {
+                  requisicao.flash("mensagemSucesso", "Usuário alterado com sucesso")
+                  resposta.redirect("/")
+                }).catch((erro) => {
+                  requisicao.flash("mensagemErro", "Houve um erro ao alterar o usuário. Tente novamente")
+                  console.log("Erro ao alterar o usuário: "+erro)
+                  resposta.redirect("/")
+                })
+              }
+            })
+          })
+
+        }else{
+
+          /** Salva o usuário */
+          categoria.save().then(() => {
+            requisicao.flash("mensagemSucesso", "Usuário alterado com sucesso!")
+            resposta.redirect("/")
+
+          }).catch((erro) => {
+            requisicao.flash("mensagemErro", "Houve um erro ao alterar o usuário")
+            console.log("Erro ao alterar o usuário: "+erro)
+            resposta.redirect("/")
+          })
+
+        }
+
   
       }).catch((erro) => {
         requisicao.flash("mensagemErro", "Este usuário não existe")
@@ -106,35 +158,59 @@ router.post('/salvar', (requisicao, resposta) => {
         }
         /** Se não tiver usuário */
         else{
-          /** Inclui a novo usuário */
-          const novoUsuario = new Usuario({
-            nome: requisicao.body.nome,
-            email: requisicao.body.email,
-            senha: requisicao.body.senha,
-          })
 
-          /** Encriptar a senha */
-          bcrypt.genSalt(10, (erro, salt) => {
-            bcrypt.hash(novoUsuario.senha, salt, (erro, hash) => {
-              if(erro){
-                requisicao.flash("mensagemErro", "Houve um erro durante o cadastro do usuário")
-                console.log("Erro durante o hash: "+erro)
-                resposta.redirect("/")
+          /** Verifica quantos usuários tem no banco */
+          Usuario.find().count(function (erro, contador) {
+
+            if(erro){
+              console.log("Erro ao contabilizar os usuários: "+erro)
+              requisicao.flash("mensagemErro", "Erro ao buscar dados no banco, tente novamente mais tarde")
+              resposta.redirect("/usuario/cadastro")
+
+            }else{
+
+              /** Se for o primeiro usuário */
+              if( contador == 0 ){
+                /** Marca como administrador */
+                var tipo = 1;
               }else{
-                /** Preencha a senha com o hash */
-                novoUsuario.senha = hash
-
-                novoUsuario.save().then(() => {
-                  requisicao.flash("mensagemSucesso", "Usuário criado com sucesso")
-                  resposta.redirect("/")
-                }).catch((erro) => {
-                  requisicao.flash("mensagemErro", "Houve um erro ao salvar o usuário. Tente novamente")
-                  console.log("Erro ao salvar o usuário: "+erro)
-                  resposta.redirect("/usuario/cadastro")
-                })
+                /** Marca como membro */
+                var tipo = 0;
               }
-            })
-          })
+
+              /** Inclui a novo usuário */
+              const novoUsuario = new Usuario({
+                nome: requisicao.body.nome,
+                email: requisicao.body.email,
+                senha: requisicao.body.senha,
+                administrador: tipo,
+              })
+
+              /** Encriptar a senha */
+              bcrypt.genSalt(10, (erro, salt) => {
+                bcrypt.hash(novoUsuario.senha, salt, (erro, hash) => {
+                  if(erro){
+                    requisicao.flash("mensagemErro", "Houve um erro durante o cadastro do usuário")
+                    console.log("Erro durante o hash: "+erro)
+                    resposta.redirect("/")
+                  }else{
+                    /** Preencha a senha com o hash */
+                    novoUsuario.senha = hash
+
+                    novoUsuario.save().then(() => {
+                      requisicao.flash("mensagemSucesso", "Usuário criado com sucesso")
+                      resposta.redirect("/")
+                    }).catch((erro) => {
+                      requisicao.flash("mensagemErro", "Houve um erro ao salvar o usuário. Tente novamente")
+                      console.log("Erro ao salvar o usuário: "+erro)
+                      resposta.redirect("/usuario/cadastro")
+                    })
+                  }
+                })
+              })
+            }
+
+          });
           
         }
       }).catch((erro) => {

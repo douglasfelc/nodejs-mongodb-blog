@@ -19,11 +19,11 @@
       <input type="hidden" name="id" value="{{categoria._id}}">
       <div class="col-md-6">
         <label for="nome" class="form-label">Nome</label>
-        <input type="text" class="form-control" id="nome" name="nome" required value="{{categoria.nome}}" placeholder="Digite o nome de sua categoria">
+        <input type="text" class="form-control" id="nome" name="nome" required value="{{categoria.nome}}" placeholder="Digite o nome de sua categoria" minlength="3" maxlength="250">
       </div>
       <div class="col-md-6">
         <label for="slug" class="form-label">Slug</label>
-        <input type="text" class="form-control" id="slug" name="slug" required value="{{categoria.slug}}" placeholder="Utilize letras minúsculas, letras, números e hífens">
+        <input type="text" class="form-control" id="slug" name="slug" required value="{{categoria.slug}}" placeholder="Utilize letras minúsculas, números e hífens" minlength="3" maxlength="250" pattern="[a-z0-9-]+">
       </div>
       <div class="col-12">
         <button type="submit" class="btn btn-dark">Salvar categoria</button>
