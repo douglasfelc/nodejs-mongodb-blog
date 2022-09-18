@@ -1,13 +1,13 @@
-# Blog em NodeJS e MongoDB
+# Blog in NodeJS and MongoDB
 
-Welcome to the Blog em NodeJS e MongoDB development repository!
+Welcome to the Blog in NodeJS and MongoDB development repository!
 
 * [Getting Started](#getting-started)
 * [Credentials](#credentials)
 
 ## Getting Started
 
-Blog em NodeJS e MongoDB is a Node and MongoDB based project. A local development environment is available to quickly get up and running.
+Blog in NodeJS and MongoDB is a Node and MongoDB based project. A local development environment is available to quickly get up and running.
 
 You will need a basic understanding of how to use the command line on your computer. This will allow you to set up the local development environment, to start it and stop it when necessary, and to run the tests.
 
@@ -39,7 +39,7 @@ Then in your terminal move to the repository folder `cd nodejs-mongodb-blog` and
 npm install
 ```
 
-Your Blog em NodeJS e MongoDB site will accessible at http://localhost:3000. You can see or change configurations in the `.env` file located at the root of the project directory.
+Your Blog in NodeJS and MongoDB site will accessible at http://localhost:3000. You can see or change configurations in the `.env` file located at the root of the project directory.
 
 #### To build and start using [Docker Compose](https://docs.docker.com/compose/reference/)
 
