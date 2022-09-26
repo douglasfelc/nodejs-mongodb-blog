@@ -26,7 +26,7 @@ const app = express()
 //Sessão(1º)
 app.use(
   session({
-    secret: "j7h5_pv3!u$9",
+    secret: process.env.PASSPORT_SECRET,
     resave: true,
     saveUninitialized: true
   })
@@ -40,18 +40,18 @@ app.use(passport.session())
 app.use(flash())
 
 //Middleware
-app.use((requisicao, resposta, next) => {
+app.use((req, res, next) => {
   /** Variáveis globais */
-  resposta.locals.mensagemSucesso = requisicao.flash("mensagemSucesso")
-  resposta.locals.mensagemErro = requisicao.flash("mensagemErro")+requisicao.flash("error")
+  res.locals.mensagemSucesso = req.flash("mensagemSucesso")
+  res.locals.mensagemErro = req.flash("mensagemErro")+req.flash("error")
 
-  /** requisicao.user: criado pelo passport com os dados do usuário logado
+  /** req.user: criado pelo passport com os dados do usuário logado
       Se tiver usuário na sessão */
-  if( requisicao.user ){
+  if( req.user ){
     /** Armazena os dados em JSON em uma variável global */
-    resposta.locals.usuarioLogado = requisicao.user.toJSON()
+    res.locals.usuarioLogado = req.user.toJSON()
   }else{
-    resposta.locals.usuarioLogado = null
+    res.locals.usuarioLogado = null
   }
 
   next(); //continuar requisição
@@ -130,73 +130,73 @@ mongoose.connect(
 
 
 /** Rotas */
-app.get('/', (requisicao, resposta) => {
+app.get('/', (req, res) => {
 
   Postagem.find().populate("categoria").lean().sort({inclusao: "DESC"}).then((postagens) => {
-    resposta.render("index", {postagens:postagens})
+    res.render("index", {postagens:postagens})
   }).catch((erro) => {
-    requisicao.flash("mensagemErro", "Houve um erro interno")
-    resposta.redirect("/404")
+    req.flash("mensagemErro", "Houve um erro interno")
+    res.redirect("/404")
   })
   
 })
 
-app.get('/postagem/:slug', (requisicao, resposta) => {
+app.get('/postagem/:slug', (req, res) => {
 
-  Postagem.findOne({slug: requisicao.params.slug}).populate("categoria").lean().then((postagem) => {
+  Postagem.findOne({slug: req.params.slug}).populate("categoria").lean().then((postagem) => {
 
     /** Se existe */
     if( postagem ){
-      resposta.render("postagem/index", {postagem: postagem})
+      res.render("postagem/index", {postagem: postagem})
     }else{
-      requisicao.flash("mensagemErro", "Esta postagem não existe.")
+      req.flash("mensagemErro", "Esta postagem não existe.")
     }
 
   }).catch((erro) => {
     console.log("CATCH: Esta postagem não existe: "+erro)
-    resposta.redirect("/")
+    res.redirect("/")
   })
 })
 
-app.get('/categorias', (requisicao, resposta) => {
+app.get('/categorias', (req, res) => {
 
   Categoria.find().lean().sort({nome:'asc'}).then((categorias) => {
-    resposta.render("categorias/index", {categorias: categorias})
+    res.render("categorias/index", {categorias: categorias})
   }).catch((erro) => {
-    requisicao.flash("mensagemErro", "Houve um erro ao listar as categorias, tente novamente mais tarde.")
+    req.flash("mensagemErro", "Houve um erro ao listar as categorias, tente novamente mais tarde.")
     console.log("Erro ao listar as categorias "+erro)
-    resposta.redirect("/")
+    res.redirect("/")
   })
   
 })
 
-app.get('/categoria/:slug', (requisicao, resposta) => {
+app.get('/categoria/:slug', (req, res) => {
 
-  Categoria.findOne({slug: requisicao.params.slug}).lean().then((categoria) => {
+  Categoria.findOne({slug: req.params.slug}).lean().then((categoria) => {
 
     /** Se existe */
     if( categoria ){
       Postagem.find({categoria: categoria._id}).lean().then((postagens) => {
-        resposta.render("categorias/postagens", {postagens:postagens, categoria: categoria})
+        res.render("categorias/postagens", {postagens:postagens, categoria: categoria})
       }).catch((erro) => {
-        requisicao.flash("mensagemErro", "Houve um erro ao listar as postagens!")
-        resposta.redirect("/")
+        req.flash("mensagemErro", "Houve um erro ao listar as postagens!")
+        res.redirect("/")
       })
 
     }else{
-      requisicao.flash("mensagemErro", "Esta categoria não existe.")
-      resposta.redirect("/")
+      req.flash("mensagemErro", "Esta categoria não existe.")
+      res.redirect("/")
     }
 
   }).catch((erro) => {
     console.log("CATCH: Esta categoria não existe: "+erro)
-    requisicao.flash("mensagemErro", "Esta categoria não existe.")
-    resposta.redirect("/")
+    req.flash("mensagemErro", "Esta categoria não existe.")
+    res.redirect("/")
   })
 })
 
-app.get("/404", (requisicao, resposta) => {
-  resposta.send("Erro 404!")
+app.get("/404", (req, res) => {
+  res.send("Erro 404!")
 })
 
 app.use('/admin', admin)
