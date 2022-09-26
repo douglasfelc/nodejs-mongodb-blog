@@ -203,8 +203,7 @@ app.use('/admin', admin)
 app.use('/usuario', usuario)
 
 
-/** Outros */
-const PORT = 3000
-app.listen(PORT, () => {
+
+app.listen(process.env.SERVER_PORT, () => {
   console.log("Servidor rodando")
 })
